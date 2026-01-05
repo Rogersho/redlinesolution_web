@@ -1,0 +1,5 @@
+vendor/
+uploads/
+.env
+.env.backup
+.DS_Store
