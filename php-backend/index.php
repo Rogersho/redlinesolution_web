@@ -119,6 +119,24 @@ switch (true) {
         break;
 
     case (preg_match('/^\/projects\/(\d+)$/', $path, $matches) && $method === 'DELETE'):
+        // Get the image URL before deleting
+        $stmt = $pdo->prepare("SELECT image_url FROM projects WHERE id = ?");
+        $stmt->execute([$matches[1]]);
+        $project = $stmt->fetch();
+        
+        // Delete the physical image file if it exists
+        if ($project && $project['image_url']) {
+            // Extract filename from URL (e.g., /api/uploads/12345.jpg -> 12345.jpg)
+            if (preg_match('/\/uploads\/(.+)$/', $project['image_url'], $fileMatch)) {
+                $filename = $fileMatch[1];
+                $filePath = __DIR__ . '/uploads/' . $filename;
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+        }
+        
+        // Now delete the project from database
         $stmt = $pdo->prepare("DELETE FROM projects WHERE id = ?");
         $stmt->execute([$matches[1]]);
         sendResponse(['message' => 'Project deleted']);
@@ -295,9 +313,8 @@ switch (true) {
         $targetFile = $uploadDir . $filename;
         
         if (move_uploaded_file($file['tmp_name'], $targetFile)) {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-            $host = $_SERVER['HTTP_HOST'];
-            $imageUrl = "$protocol://$host/uploads/$filename";
+            // Store as relative path /api/uploads/... for consistency
+            $imageUrl = "/api/uploads/$filename";
             sendResponse(['imageUrl' => $imageUrl]);
         } else {
             sendResponse(['error' => 'Failed to upload file'], 500);

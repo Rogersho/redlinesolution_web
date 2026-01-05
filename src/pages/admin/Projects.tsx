@@ -62,16 +62,30 @@ const AdminProjects = () => {
 
     const getImageUrl = (url?: string) => {
         if (!url) return undefined;
-        // Fix legacy localhost URLs or URLs with the wrong port
+
+        // Convert to absolute URL if it's just a path
+        if (url.startsWith('/uploads/')) {
+            return `${API_BASE_URL}${url}`;
+        }
+
+        // Fix localhost URLs (old development URLs)
         if (url.includes('localhost:') && url.includes('/uploads/')) {
             const parts = url.split('/uploads/');
             return `${API_BASE_URL}/uploads/${parts[1]}`;
         }
+
+        // Fix production URLs missing /api/ prefix
+        if (url.includes('redlinesolution.rw/uploads/')) {
+            const parts = url.split('/uploads/');
+            return `${API_BASE_URL}/uploads/${parts[1]}`;
+        }
+
         // Fix legacy /php-backend/ prefix if present
         if (url.includes('/php-backend/uploads/')) {
             const parts = url.split('/php-backend/uploads/');
             return `${API_BASE_URL}/uploads/${parts[1]}`;
         }
+
         return url;
     };
 
