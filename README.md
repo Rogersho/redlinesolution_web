@@ -1,6 +1,6 @@
 # Red Line Solution Ltd - Official Website
 
-![Red Line Solution Banner](public/og-image.png)
+![Red Line Solution Banner](public/logo.jpeg)
 
 **Red Line Solution Ltd** is Rwanda’s premier provider of advanced fire safety, security systems, and building automation solutions. This repository contains the source code for the company's official web platform, featuring a modern, responsive public interface and a fully functional administrative dashboard.
 
